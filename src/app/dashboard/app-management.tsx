@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,17 +17,24 @@ export function AppManagement() {
     const { toast } = useToast();
 
     const toggleBlock = (appName: string) => {
+        let appToggled = '';
+        let newStatus = '';
+
         setApps(currentApps => currentApps.map(app => {
             if (app.name === appName) {
-                const newStatus = app.status === 'Blocked' ? 'Allowed' : 'Blocked';
-                toast({
-                    title: `App ${newStatus}`,
-                    description: `${appName} has been ${newStatus.toLowerCase()}.`,
-                });
+                newStatus = app.status === 'Blocked' ? 'Allowed' : 'Blocked';
+                appToggled = appName;
                 return {...app, status: newStatus };
             }
             return app;
         }));
+        
+        if (appToggled) {
+             toast({
+                title: `App ${newStatus}`,
+                description: `${appName} has been ${newStatus.toLowerCase()}.`,
+            });
+        }
     };
 
     return (
