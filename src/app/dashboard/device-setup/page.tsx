@@ -1,21 +1,78 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { QrCode, Loader2, Link } from 'lucide-react';
+import { QrCode, Loader2, Link, Camera, ScanLine } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 export default function DeviceSetupPage() {
+    const [activeTab, setActiveTab] = useState('qrcode');
     const [showQr, setShowQr] = useState(false);
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [isLoadingQr, setIsLoadingQr] = useState(false);
     const [pairingCode, setPairingCode] = useState('');
     const [isConnecting, setIsConnecting] = useState(false);
     const { toast } = useToast();
+
+    const scannerVideoRef = useRef<HTMLVideoElement>(null);
+    const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+
+    const stopCamera = () => {
+        if (scannerVideoRef.current && scannerVideoRef.current.srcObject) {
+            const stream = scannerVideoRef.current.srcObject as MediaStream;
+            stream.getTracks().forEach(track => track.stop());
+            scannerVideoRef.current.srcObject = null;
+        }
+    };
+    
+    useEffect(() => {
+        if (activeTab !== 'scan') {
+            stopCamera();
+        } else {
+             startScannerCamera();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab]);
+
+    useEffect(() => {
+        return () => {
+            stopCamera();
+        };
+    }, []);
+
+    const startScannerCamera = async () => {
+        stopCamera();
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            setHasCameraPermission(true);
+
+            if (scannerVideoRef.current) {
+                scannerVideoRef.current.srcObject = stream;
+                // In a real app, you would integrate a QR code scanning library here
+                // to process the video stream and detect QR codes.
+                // For this demo, we'll just show the camera feed.
+                setTimeout(() => {
+                     toast({
+                        title: 'Scanner Ready',
+                        description: 'Point the camera at a QR code.',
+                    });
+                }, 1000)
+            }
+        } catch (error) {
+            console.error('Error accessing camera for scanner:', error);
+            setHasCameraPermission(false);
+            toast({
+                variant: 'destructive',
+                title: 'Camera Access Denied',
+                description: 'Please enable camera permissions to use the scanner.',
+            });
+        }
+    };
 
     const generateQrCode = async () => {
         setIsLoadingQr(true);
@@ -88,20 +145,21 @@ export default function DeviceSetupPage() {
                     <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
                         <h3 className="font-semibold mb-2">Instructions for Child's Device:</h3>
                         <ol className="list-decimal list-inside space-y-1">
-                            <li>Install the <strong>GuardianEye12 Companion</strong> app from the app store on your child's device.</li>
-                            <li>Open the app and follow the on-screen prompts to grant necessary permissions.</li>
-                            <li>The app will display a QR code scanner and an option to see a manual pairing code.</li>
+                            <li>Install the <strong>GuardianEye12 Companion</strong> app from the app store.</li>
+                            <li>Open the app and grant necessary permissions.</li>
+                            <li>Follow the app's instructions to either display a QR code/manual code, or to scan one from this parent app.</li>
                         </ol>
                     </div>
 
-                    <Tabs defaultValue="qrcode" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="qrcode"><QrCode className="mr-2"/>Scan QR Code</TabsTrigger>
-                            <TabsTrigger value="manual"><Link className="mr-2"/>Enter Manual Code</TabsTrigger>
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                        <TabsList className="grid w-full grid-cols-3">
+                            <TabsTrigger value="qrcode"><QrCode className="mr-2"/>Generate Code</TabsTrigger>
+                            <TabsTrigger value="manual"><Link className="mr-2"/>Enter Code</TabsTrigger>
+                            <TabsTrigger value="scan"><ScanLine className="mr-2"/>Scan Code</TabsTrigger>
                         </TabsList>
                         <TabsContent value="qrcode" className="text-center mt-4">
                              <p className="text-sm text-muted-foreground mb-4">
-                                Generate a unique QR code below. Use the companion app on the child's device to scan it.
+                                Generate a unique QR code for the child's device to scan.
                             </p>
                             {showQr ? (
                                 <div className="flex flex-col items-center gap-4 animate-fade-in">
@@ -148,6 +206,25 @@ export default function DeviceSetupPage() {
                                     Connect Device
                                 </Button>
                             </form>
+                        </TabsContent>
+                         <TabsContent value="scan" className="mt-4">
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Use your camera to scan the QR code displayed on the child's device.
+                            </p>
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="w-full aspect-video rounded-md bg-muted relative">
+                                    <video ref={scannerVideoRef} className="w-full h-full object-cover rounded-md" autoPlay muted playsInline />
+                                </div>
+                                {hasCameraPermission === false && (
+                                    <Alert variant="destructive">
+                                        <Camera className="h-4 w-4" />
+                                        <AlertTitle>Camera Access Required</AlertTitle>
+                                        <AlertDescription>
+                                            Please allow camera access in your browser to use the QR scanner.
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                            </div>
                         </TabsContent>
                     </Tabs>
                 </CardContent>
