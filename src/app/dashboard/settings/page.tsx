@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
+import { Shield, Lock } from 'lucide-react';
 
 export default function SettingsPage() {
     return (
@@ -65,22 +66,26 @@ export default function SettingsPage() {
                         <Button type="submit">Update Password</Button>
                     </form>
                     <Separator />
-                    <form className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="current-pin">Set or Update PIN</Label>
-                             <Input id="current-pin" type="password" placeholder="Enter 4-digit PIN" maxLength={4} />
-                        </div>
-                        <Button type="submit">Set PIN</Button>
-                    </form>
-                    <Separator />
                      <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
                         <Label htmlFor="biometrics" className="flex flex-col space-y-1">
-                            <span>Enable Biometric Authentication</span>
+                           <span className='flex items-center'><Shield className='mr-2' /> Enable Biometric Authentication</span>
                             <span className="font-normal leading-snug text-muted-foreground">
                                 Use your device's screen lock or biometrics to secure your account.
                             </span>
                         </Label>
                         <Switch id="biometrics" />
+                    </div>
+                     <div className="rounded-lg border p-4">
+                        <Label htmlFor="pin-lock" className="flex flex-col space-y-1 mb-4">
+                           <span className='flex items-center'><Lock className='mr-2' /> App Lock PIN</span>
+                           <span className="font-normal leading-snug text-muted-foreground">
+                                Set a 4-digit PIN to lock the application.
+                            </span>
+                        </Label>
+                        <form className="flex items-center gap-4">
+                            <Input id="pin-lock" type="password" placeholder="Enter 4-digit PIN" maxLength={4} className="max-w-xs" />
+                            <Button type="submit">Set PIN</Button>
+                        </form>
                     </div>
                 </CardContent>
             </Card>
