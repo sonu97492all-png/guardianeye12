@@ -81,18 +81,27 @@ export default function DeviceSetupPage() {
                 <CardHeader>
                     <CardTitle>Connect a New Device</CardTitle>
                     <CardDescription>
-                        To start monitoring a device, install the GuardianEye12 companion app on it and connect it to your account.
+                        Follow the steps below to connect and start monitoring a new device.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+                    <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                        <h3 className="font-semibold mb-2">Instructions for Child's Device:</h3>
+                        <ol className="list-decimal list-inside space-y-1">
+                            <li>Install the <strong>GuardianEye12 Companion</strong> app from the app store on your child's device.</li>
+                            <li>Open the app and follow the on-screen prompts to grant necessary permissions.</li>
+                            <li>The app will display a QR code scanner and an option to see a manual pairing code.</li>
+                        </ol>
+                    </div>
+
                     <Tabs defaultValue="qrcode" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="qrcode"><QrCode className="mr-2"/>QR Code</TabsTrigger>
-                            <TabsTrigger value="manual"><Link className="mr-2"/>Manual Code</TabsTrigger>
+                            <TabsTrigger value="qrcode"><QrCode className="mr-2"/>Scan QR Code</TabsTrigger>
+                            <TabsTrigger value="manual"><Link className="mr-2"/>Enter Manual Code</TabsTrigger>
                         </TabsList>
                         <TabsContent value="qrcode" className="text-center mt-4">
                              <p className="text-sm text-muted-foreground mb-4">
-                                Generate a QR code and scan it with the companion app on the child's device.
+                                Generate a unique QR code below. Use the companion app on the child's device to scan it.
                             </p>
                             {showQr ? (
                                 <div className="flex flex-col items-center gap-4 animate-fade-in">
@@ -106,7 +115,7 @@ export default function DeviceSetupPage() {
                                             className="rounded-lg shadow-md"
                                         />
                                     ) : null}
-                                    <p className="text-sm text-muted-foreground">Scan this code with the companion app.</p>
+                                    <p className="text-sm font-bold">Scan this with the child's device.</p>
                                     <Button variant="outline" onClick={hideQrCode}>Hide Code</Button>
                                 </div>
                             ) : (
@@ -121,7 +130,7 @@ export default function DeviceSetupPage() {
                         </TabsContent>
                         <TabsContent value="manual" className="mt-4">
                              <p className="text-sm text-muted-foreground mb-4">
-                                Enter the 6-digit code displayed on the child's device.
+                                On the child's device, find the 6-digit manual pairing code and enter it here.
                             </p>
                             <form onSubmit={handleManualConnect} className="space-y-4">
                                 <div className="space-y-2">
