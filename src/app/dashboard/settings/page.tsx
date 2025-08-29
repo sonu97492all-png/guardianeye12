@@ -15,7 +15,7 @@ export default function SettingsPage() {
                     <CardDescription>Update your personal information.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form className="space-y-4">
+                    <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
                             <Input id="name" defaultValue="John Doe" />
@@ -24,7 +24,25 @@ export default function SettingsPage() {
                             <Label htmlFor="email">Email Address</Label>
                             <Input id="email" type="email" defaultValue="john.doe@example.com" />
                         </div>
-                        <Button type="submit">Save Changes</Button>
+                        <div className="space-y-2">
+                            <Label htmlFor="contact">Contact Number</Label>
+                            <Input id="contact" type="tel" placeholder="+1 234 567 890" />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="address">Address</Label>
+                            <Input id="address" placeholder="123 Main St" />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="city">City</Label>
+                            <Input id="city" placeholder="Anytown" />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="country">Country</Label>
+                            <Input id="country" placeholder="USA" />
+                        </div>
+                        <div className="md:col-span-2">
+                            <Button type="submit">Save Changes</Button>
+                        </div>
                     </form>
                 </CardContent>
             </Card>
@@ -45,6 +63,14 @@ export default function SettingsPage() {
                             <Input id="new-password" type="password" />
                         </div>
                         <Button type="submit">Update Password</Button>
+                    </form>
+                    <Separator />
+                    <form className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="current-pin">Set or Update PIN</Label>
+                             <Input id="current-pin" type="password" placeholder="Enter 4-digit PIN" maxLength={4} />
+                        </div>
+                        <Button type="submit">Set PIN</Button>
                     </form>
                     <Separator />
                      <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
