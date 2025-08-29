@@ -61,12 +61,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.label}>
-                <Link href={item.href} passHref legacyBehavior>
+                <Link href={item.href} passHref>
                   <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.label}>
-                    <a>
+                    <span>
                         <item.icon />
                         <span>{item.label}</span>
-                    </a>
+                    </span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
@@ -76,9 +76,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/dashboard/settings" passHref legacyBehavior>
+                    <Link href="/dashboard/settings" passHref>
                         <SidebarMenuButton asChild tooltip="Profile">
-                        <a>
+                        <span>
                             <Avatar className="h-8 w-8">
                                 <AvatarImage src="https://picsum.photos/100/100" alt="User avatar" data-ai-hint="person avatar" />
                                 <AvatarFallback>JD</AvatarFallback>
@@ -87,7 +87,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 <span className='font-semibold'>John Doe</span>
                                 <span className='text-xs text-sidebar-foreground/70'>john.doe@example.com</span>
                             </div>
-                        </a>
+                        </span>
                         </SidebarMenuButton>
                     </Link>
                 </SidebarMenuItem>
