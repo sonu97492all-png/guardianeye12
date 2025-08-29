@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mic, Video, Camera, RotateCw, ScreenShare, ScreenShareOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -98,6 +97,15 @@ export function LiveMonitoring() {
                 description: `You have stopped viewing the device's screen.`,
             });
         } else {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Screen Share Not Supported',
+                    description: 'Your browser does not support screen sharing or you are not in a secure context (HTTPS).',
+                });
+                setHasScreenSharePermission(false);
+                return;
+            }
             try {
                 const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
                 setHasScreenSharePermission(true);
@@ -176,7 +184,7 @@ export function LiveMonitoring() {
                             <Alert variant="destructive" className="h-full">
                                 <AlertTitle>Screen Share Access Required</AlertTitle>
                                 <AlertDescription>
-                                    Please grant permission to share your screen.
+                                    Please grant permission to share your screen, or your browser may not support this feature.
                                 </AlertDescription>
                             </Alert>
                         )}
