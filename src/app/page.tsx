@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, Eye, KeyRound } from 'lucide-react';
+import { Eye, KeyRound } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,11 +27,6 @@ export default function AuthPage() {
     // For this demo, we'll switch to login tab and then they can login.
     alert('Signup successful! Please login to continue.');
     setActiveTab('login');
-  };
-  
-  const handleBiometricAuth = () => {
-    // Placeholder for biometric auth
-    alert('Biometric authentication is not implemented in this demo.');
   };
 
   return (
@@ -69,18 +64,6 @@ export default function AuthPage() {
                   Login
                 </Button>
               </form>
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-                </div>
-              </div>
-              <Button variant="outline" className="w-full" onClick={handleBiometricAuth}>
-                <ShieldCheck className="mr-2 h-4 w-4" />
-                Authenticate with Biometrics
-              </Button>
             </CardContent>
           </Card>
         </TabsContent>
