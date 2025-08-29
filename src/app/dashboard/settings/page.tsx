@@ -6,8 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Shield, Lock } from 'lucide-react';
+import { useState } from 'react';
 
 export default function SettingsPage() {
+    const [isPinLockEnabled, setIsPinLockEnabled] = useState(false);
+
     return (
         <div className="grid gap-6 max-w-4xl mx-auto">
             <Card>
@@ -76,16 +79,21 @@ export default function SettingsPage() {
                         <Switch id="biometrics" />
                     </div>
                      <div className="rounded-lg border p-4">
-                        <Label htmlFor="pin-lock" className="flex flex-col space-y-1 mb-4">
-                           <span className='flex items-center'><Lock className='mr-2' /> App Lock PIN</span>
-                           <span className="font-normal leading-snug text-muted-foreground">
-                                Set a 4-digit PIN to lock the application.
-                            </span>
-                        </Label>
-                        <form className="flex items-center gap-4">
-                            <Input id="pin-lock" type="password" placeholder="Enter 4-digit PIN" maxLength={4} className="max-w-xs" />
-                            <Button type="submit">Set PIN</Button>
-                        </form>
+                        <div className="flex items-center justify-between space-x-2 mb-4">
+                            <Label htmlFor="pin-lock-switch" className="flex flex-col space-y-1">
+                                <span className='flex items-center'><Lock className='mr-2' /> App Lock PIN</span>
+                                <span className="font-normal leading-snug text-muted-foreground">
+                                    Set a 4-digit PIN to lock the application.
+                                </span>
+                            </Label>
+                            <Switch id="pin-lock-switch" checked={isPinLockEnabled} onCheckedChange={setIsPinLockEnabled} />
+                        </div>
+                        {isPinLockEnabled && (
+                            <form className="flex items-center gap-4 animate-fade-in">
+                                <Input id="pin-lock" type="password" placeholder="Enter 4-digit PIN" maxLength={4} className="max-w-xs" />
+                                <Button type="submit">Set PIN</Button>
+                            </form>
+                        )}
                     </div>
                 </CardContent>
             </Card>
