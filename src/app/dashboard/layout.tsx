@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Eye,
+  Info,
   LayoutGrid,
   LineChart,
   LogOut,
@@ -43,6 +44,7 @@ const navItems = [
   { href: '/dashboard/device-setup', icon: QrCode, label: 'Device Setup' },
   { href: '/dashboard/reports', icon: LineChart, label: 'Reports' },
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
+  { href: '/dashboard/about', icon: Info, label: 'About' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
