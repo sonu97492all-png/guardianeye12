@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mic, Video, Camera, RotateCw, ScreenShare, ScreenShareOff, CameraOff } from "lucide-react";
+import { Mic, Video, Camera, RotateCw, ScreenShare, ScreenShareOff, CameraOff, MicOff, Volume2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
@@ -234,12 +234,61 @@ export function LiveScreenView() {
 
 export function LiveAudio() {
     const { toast } = useToast();
-     const handleStartLiveAudio = () => {
-        toast({
-            title: `Live Audio Started`,
-            description: `The live audio session has begun.`,
-        });
-    }
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const [isListening, setIsListening] = useState(false);
+    const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
+    const mediaStreamRef = useRef<MediaStream | null>(null);
+
+    const stopAudio = () => {
+        if (mediaStreamRef.current) {
+            mediaStreamRef.current.getTracks().forEach(track => track.stop());
+            mediaStreamRef.current = null;
+        }
+        if (audioRef.current) {
+            audioRef.current.srcObject = null;
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            stopAudio();
+        };
+    }, []);
+
+    const handleToggleAudio = async () => {
+        if (isListening) {
+            stopAudio();
+            setIsListening(false);
+            setHasMicPermission(null);
+            toast({
+                title: "Live Audio Stopped",
+                description: "The audio session has ended.",
+            });
+        } else {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaStreamRef.current = stream;
+                setHasMicPermission(true);
+                if (audioRef.current) {
+                    audioRef.current.srcObject = stream;
+                }
+                setIsListening(true);
+                toast({
+                    title: "Live Audio Started",
+                    description: "Listening to the device's microphone.",
+                });
+            } catch (error) {
+                console.error("Error accessing microphone:", error);
+                setHasMicPermission(false);
+                setIsListening(false);
+                toast({
+                    variant: 'destructive',
+                    title: 'Microphone Access Denied',
+                    description: 'Please enable microphone permissions in your browser settings.',
+                });
+            }
+        }
+    };
 
     return (
         <Card className="md:col-span-2">
@@ -247,11 +296,34 @@ export function LiveAudio() {
                 <CardTitle>Live Audio</CardTitle>
                 <CardDescription>Listen to the device's microphone in real-time.</CardDescription>
             </CardHeader>
-            <CardContent>
-                 <Button onClick={handleStartLiveAudio} className="w-full">
-                    <Mic className="mr-2" /> Listen
-                 </Button>
+            <CardContent className="space-y-4">
+                <div className="flex flex-col items-center justify-center h-24 bg-muted rounded-lg">
+                    {isListening ? (
+                        <div className="flex items-center gap-2 text-primary animate-pulse">
+                            <Volume2 size={32} />
+                            <span className="font-semibold">LISTENING...</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                            <MicOff size={32} />
+                            <span>Audio is off</span>
+                        </div>
+                    )}
+                    <audio ref={audioRef} autoPlay playsInline muted={!isListening}></audio>
+                </div>
+                {hasMicPermission === false && (
+                    <Alert variant="destructive">
+                        <AlertTitle>Microphone Access Required</AlertTitle>
+                        <AlertDescription>
+                            Please allow microphone access to use this feature.
+                        </AlertDescription>
+                    </Alert>
+                )}
+                <Button onClick={handleToggleAudio} variant={isListening ? "destructive" : "default"} className="w-full">
+                    {isListening ? <MicOff className="mr-2" /> : <Mic className="mr-2" />}
+                    {isListening ? 'Stop Listening' : 'Start Listening'}
+                </Button>
             </CardContent>
         </Card>
-    )
+    );
 }

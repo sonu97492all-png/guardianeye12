@@ -25,6 +25,7 @@ const monitoredDevices = [
     location: 'San Francisco, CA',
     email: 'daniel.doe@icloud.com',
     isLocked: false,
+    simOperator: 'Verizon',
   },
   {
     id: '2',
@@ -37,6 +38,7 @@ const monitoredDevices = [
     location: 'New York, NY',
     email: 'family.doe@outlook.com',
     isLocked: true,
+    simOperator: 'N/A',
   },
 ];
 
@@ -107,6 +109,8 @@ export default function DeviceDetailPage({ params }: { params: { deviceId: strin
                                <dd>{device.os}</dd>
                                <dt className="font-medium text-muted-foreground">Registered Email</dt>
                                <dd>{device.email}</dd>
+                               <dt className="font-medium text-muted-foreground">SIM Operator</dt>
+                               <dd>{device.simOperator}</dd>
                                <dt className="font-medium text-muted-foreground">IP Address</dt>
                                <dd>{device.ip}</dd>
                                <dt className="font-medium text-muted-foreground">Status</dt>
