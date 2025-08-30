@@ -1,8 +1,12 @@
 
+'use client';
+
+import { useState } from 'react';
 import {
   Activity,
   AppWindow,
   Bell,
+  Loader2,
   MessageCircle,
   Shield,
 } from 'lucide-react';
@@ -18,8 +22,27 @@ import { AppManagement } from './app-management';
 import { CallHistory } from './call-history';
 import { LocationCard } from './monitored-devices/location';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 export default function DashboardPage() {
+  const { toast } = useToast();
+  const [isScanning, setIsScanning] = useState(false);
+
+  const handleScan = () => {
+    setIsScanning(true);
+    toast({
+      title: 'Antivirus Scan Started',
+      description: 'The device is being scanned for threats.',
+    });
+    setTimeout(() => {
+      setIsScanning(false);
+      toast({
+        title: 'Scan Complete',
+        description: 'No threats were found on the device.',
+      });
+    }, 3000);
+  };
+
   return (
     <div className="animate-fade-in grid gap-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -38,8 +61,9 @@ export default function DashboardPage() {
                     <CardTitle className="flex items-center justify-between space-y-0 pb-2 text-sm font-medium">Antivirus Protection</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                        <Shield className="mr-2" /> Start Scan
+                    <Button onClick={handleScan} disabled={isScanning} className="w-full bg-green-600 hover:bg-green-700 text-white">
+                        {isScanning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Shield className="mr-2" />}
+                        {isScanning ? 'Scanning...' : 'Start Scan'}
                     </Button>
                 </CardContent>
             </Card>
