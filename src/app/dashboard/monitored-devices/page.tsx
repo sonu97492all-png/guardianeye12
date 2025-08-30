@@ -32,6 +32,7 @@ import Link from 'next/link';
 
 const monitoredDevices = [
   {
+    id: '1',
     name: "Daniel's iPhone 14",
     status: 'Online',
     os: 'iOS 17.5',
@@ -41,6 +42,7 @@ const monitoredDevices = [
     contact: '+1-202-555-0191',
   },
   {
+    id: '2',
     name: 'Family Desktop',
     status: 'Offline',
     os: 'Windows 11',
@@ -68,7 +70,7 @@ export default function MonitoredDevicesPage() {
         </CardHeader>
         <CardContent className="grid gap-6">
           {monitoredDevices.map((device) => (
-            <DeviceCard key={device.name} device={device} />
+            <DeviceCard key={device.id} device={device} />
           ))}
         </CardContent>
       </Card>
@@ -101,7 +103,7 @@ function DeviceCard({ device }: { device: (typeof monitoredDevices)[0] }) {
               </div>
             </div>
           </div>
-          <DeviceActionsMenu />
+          <DeviceActionsMenu deviceId={device.id} />
         </div>
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2">
@@ -135,7 +137,7 @@ function DeviceCard({ device }: { device: (typeof monitoredDevices)[0] }) {
   );
 }
 
-function DeviceActionsMenu() {
+function DeviceActionsMenu({ deviceId }: { deviceId: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -144,8 +146,10 @@ function DeviceActionsMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>
-          <Eye className="mr-2" /> View Details
+        <DropdownMenuItem asChild>
+          <Link href={`/dashboard/monitored-devices/${deviceId}`}>
+            <Eye className="mr-2" /> View Details
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Lock className="mr-2" /> Remote Lock

@@ -1,8 +1,8 @@
+
 import {
   Activity,
   AppWindow,
   Bell,
-  MapPin,
   MessageCircle,
   Phone,
 } from 'lucide-react';
@@ -13,11 +13,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import Image from 'next/image';
 import { WeeklyActivityChart } from './weekly-activity-chart';
 import { LiveMonitoring } from './live-monitoring';
 import { AppManagement } from './app-management';
 import { CallHistory } from './call-history';
+import { LocationCard } from './monitored-devices/location';
 
 export default function DashboardPage() {
   return (
@@ -74,33 +74,13 @@ export default function DashboardPage() {
                     <WeeklyActivityChart />
                 </CardContent>
             </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><MapPin /> Real-time Location</CardTitle>
-                    <CardDescription>Last known location of the device.</CardDescription>
-                </CardHeader>
-                <CardContent className="p-0 relative">
-                    <Image
-                        src="https://picsum.photos/800/400"
-                        alt="Map"
-                        width={800}
-                        height={400}
-                        data-ai-hint="street map"
-                        className="w-full h-auto object-cover rounded-b-lg aspect-[2/1]"
-                    />
-                    <div className="absolute bottom-2 left-2 bg-background/80 p-2 rounded-md text-xs">
-                        <p className="font-semibold">40.7128° N, 74.0060° W</p>
-                        <p>Last updated: Just now</p>
-                    </div>
-                </CardContent>
-            </Card>
+           <LocationCard />
         </div>
          <div className="grid gap-6 md:grid-cols-2">
-            <LiveMonitoring />
             <AppManagement />
-        </div>
-        <div>
-            <CallHistory />
+             <div className='grid gap-6'>
+                <CallHistory />
+            </div>
         </div>
     </div>
   );
