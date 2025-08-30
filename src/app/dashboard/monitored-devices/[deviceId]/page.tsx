@@ -44,8 +44,9 @@ const monitoredDevices = [
 
 
 export default function DeviceDetailPage({ params }: { params: { deviceId: string } }) {
+    const { deviceId } = params;
     const { toast } = useToast();
-    const [device, setDevice] = useState(() => monitoredDevices.find(d => d.id === params.deviceId));
+    const [device, setDevice] = useState(() => monitoredDevices.find(d => d.id === deviceId));
 
     const handleToggleLock = () => {
         if (device) {
