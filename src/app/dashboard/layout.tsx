@@ -9,6 +9,7 @@ import {
   LineChart,
   LogOut,
   MessageSquareWarning,
+  Monitor,
   QrCode,
   Settings,
 } from 'lucide-react';
@@ -37,6 +38,7 @@ import {
 
 const navItems = [
   { href: '/dashboard', icon: LayoutGrid, label: 'Dashboard' },
+  { href: '/dashboard/monitored-devices', icon: Monitor, label: 'Monitored Devices' },
   { href: '/dashboard/social-media', icon: MessageSquareWarning, label: 'Social Media' },
   { href: '/dashboard/device-setup', icon: QrCode, label: 'Device Setup' },
   { href: '/dashboard/reports', icon: LineChart, label: 'Reports' },
