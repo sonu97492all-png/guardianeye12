@@ -1,3 +1,4 @@
+
 'use client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,20 +6,60 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { Shield, Lock } from 'lucide-react';
+import { Shield, Lock, User, Power } from 'lucide-react';
 import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
+    const { toast } = useToast();
     const [isPinLockEnabled, setIsPinLockEnabled] = useState(false);
+    const [isAccountActive, setIsAccountActive] = useState(true);
+    const [profileImage, setProfileImage] = useState('https://picsum.photos/200/200');
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfileImage(reader.result as string);
+                toast({
+                    title: 'Profile Picture Updated',
+                    description: 'Your new profile picture has been set.',
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    const handleAccountToggle = (isActive: boolean) => {
+        setIsAccountActive(isActive);
+        toast({
+            title: `Account ${isActive ? 'Activated' : 'Deactivated'}`,
+            description: `Your account has been successfully ${isActive ? 'activated' : 'deactivated'}.`,
+        });
+    }
 
     return (
         <div className="grid gap-6 max-w-4xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle>Profile Settings</CardTitle>
-                    <CardDescription>Update your personal information.</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><User /> Profile Settings</CardTitle>
+                    <CardDescription>Update your personal information and profile picture.</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className='space-y-6'>
+                    <div className="flex items-center gap-6">
+                        <Avatar className="h-24 w-24">
+                            <AvatarImage src={profileImage} alt="User avatar" data-ai-hint="person avatar" />
+                            <AvatarFallback>JD</AvatarFallback>
+                        </Avatar>
+                        <div className="space-y-2">
+                             <Label htmlFor="picture">Profile Picture</Label>
+                             <Input id="picture" type="file" className="max-w-xs" onChange={handleImageChange} accept="image/*" />
+                             <p className="text-xs text-muted-foreground">Recommended size: 200x200px</p>
+                        </div>
+                    </div>
+                     <Separator />
                     <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
@@ -98,6 +139,25 @@ export default function SettingsPage() {
                 </CardContent>
             </Card>
 
+             <Card>
+                <CardHeader>
+                    <CardTitle>Account Status</CardTitle>
+                    <CardDescription>Manage your account's active status.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                     <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
+                        <Label htmlFor="account-status" className="flex flex-col space-y-1">
+                           <span className='flex items-center'><Power className='mr-2' /> Account Status</span>
+                            <span className="font-normal leading-snug text-muted-foreground">
+                                Deactivating your account will disable access to the dashboard.
+                            </span>
+                        </Label>
+                        <Switch id="account-status" checked={isAccountActive} onCheckedChange={handleAccountToggle}/>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">Your account is currently <span className={isAccountActive ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>{isAccountActive ? 'Active' : 'Deactivated'}</span>.</p>
+                </CardContent>
+            </Card>
+
             <Card>
                 <CardHeader>
                     <CardTitle>Notifications</CardTitle>
@@ -121,3 +181,5 @@ export default function SettingsPage() {
         </div>
     );
 }
+
+    
