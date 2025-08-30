@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
-  Desktop,
+  Monitor,
   Eye,
   Lock,
   Mic,
@@ -87,7 +87,7 @@ function DeviceCard({ device }: { device: (typeof monitoredDevices)[0] }) {
             {device.type === 'mobile' ? (
               <Smartphone className="h-8 w-8 text-muted-foreground" />
             ) : (
-              <Desktop className="h-8 w-8 text-muted-foreground" />
+              <Monitor className="h-8 w-8 text-muted-foreground" />
             )}
             <div>
               <CardTitle className="text-xl">{device.name}</CardTitle>
