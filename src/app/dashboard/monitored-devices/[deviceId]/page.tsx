@@ -1,140 +1,121 @@
+"use client";
 
-'use client';
-
-import { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ChevronLeft, Lock, Smartphone, Unlock } from "lucide-react";
-import Link from "next/link";
+import { use } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { monitoredDevices } from "@/data/devices";
+import { LiveMonitoring } from "../../live-monitoring";
+import { LocationCard } from "../location";
 import { AppManagement } from "../../app-management";
 import { CallHistory } from "../../call-history";
-import { LiveAudio, LiveScreenView, RemoteCameraControl } from "../../live-monitoring";
-import { LocationCard } from "../location";
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Smartphone, Monitor, Wifi, Signal, Mail, Phone, Power } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-// Mock data, in a real app you would fetch this based on params.deviceId
-const monitoredDevices = [
-  {
-    id: '1',
-    name: "Daniel's iPhone 14",
-    status: 'Online',
-    os: 'iOS 17.5',
-    type: 'mobile',
-    ip: '192.168.1.101',
-    lastSync: '0 seconds ago',
-    location: 'San Francisco, CA',
-    email: 'daniel.doe@icloud.com',
-    isLocked: false,
-    simOperator: 'Verizon',
-  },
-  {
-    id: '2',
-    name: 'Family Desktop',
-    status: 'Offline',
-    os: 'Windows 11',
-    type: 'desktop',
-    ip: '192.168.1.102',
-    lastSync: '2 hours ago',
-    location: 'New York, NY',
-    email: 'family.doe@outlook.com',
-    isLocked: true,
-    simOperator: 'N/A',
-  },
-];
+export default function DeviceDetailPage({
+  params,
+}: {
+  params: Promise<{ deviceId: string }>;
+}) {
+  const { toast } = useToast();
+  const { deviceId } = use(params);
 
+  const [device, setDevice] = useState(() =>
+    monitoredDevices.find((d) => d.id === deviceId)
+  );
 
-export default function DeviceDetailPage({ params }: { params: { deviceId: string } }) {
-    const { deviceId } = params;
-    const { toast } = useToast();
-    const [device, setDevice] = useState(() => monitoredDevices.find(d => d.id === deviceId));
-
-    const handleToggleLock = () => {
-        if (device) {
-            const newLockedState = !device.isLocked;
-            setDevice(d => d ? { ...d, isLocked: newLockedState } : undefined);
-            toast({
-                title: `Device ${newLockedState ? 'Locked' : 'Unlocked'}`,
-                description: `${device.name} has been remotely ${newLockedState ? 'locked' : 'unlocked'}.`,
-            });
-        }
+  const handleToggleLock = () => {
+    if (device) {
+       setDevice(d => d ? {...d, locked: !d.locked} : d)
+      toast({
+        title: `Device ${device.locked ? 'Unlocked' : 'Locked'}`,
+        description: `${device.name} has been remotely ${device.locked ? 'unlocked' : 'locked'}.`,
+      });
     }
+  };
 
-    if (!device) {
-        return (
-             <div className="flex flex-col items-center justify-center h-full text-center">
-                <h1 className="text-2xl font-bold">Device not found</h1>
-                <p className="text-muted-foreground">The device you are looking for does not exist.</p>
-                <Button asChild className="mt-4">
-                    <Link href="/dashboard/monitored-devices">
-                        <ChevronLeft /> Go Back to Devices
-                    </Link>
-                </Button>
-            </div>
-        )
-    }
-
+  if (!device) {
     return (
-        <div className="grid gap-6 animate-fade-in">
-            <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon" asChild>
-                    <Link href="/dashboard/monitored-devices">
-                        <ChevronLeft />
-                        <span className="sr-only">Back</span>
-                    </Link>
-                </Button>
-                <h1 className="text-2xl font-bold">Device Details</h1>
-                 <Button onClick={handleToggleLock} variant={device.isLocked ? "destructive" : "outline"} size="sm" className="ml-auto">
-                    {device.isLocked ? <Lock className="mr-2"/> : <Unlock className="mr-2"/>}
-                    {device.isLocked ? "Unlock Device" : "Lock Device"}
-                </Button>
-            </div>
-
-            <div className="grid lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-1 space-y-6">
-                    <Card>
-                        <CardHeader className="flex-row items-center gap-4 space-y-0">
-                            <Smartphone className="h-10 w-10 text-muted-foreground" />
-                            <div>
-                                <CardTitle>{device.name}</CardTitle>
-                                <CardDescription className="flex items-center gap-2">
-                                     <span className={`h-2 w-2 rounded-full ${device.status === 'Online' ? 'bg-green-500' : 'bg-gray-400'}`} />
-                                    {device.status} - {device.os}
-                                </CardDescription>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                               <dt className="font-medium text-muted-foreground">Device Type</dt>
-                               <dd>Phone</dd>
-                               <dt className="font-medium text-muted-foreground">Operating System</dt>
-                               <dd>{device.os}</dd>
-                               <dt className="font-medium text-muted-foreground">Registered Email</dt>
-                               <dd>{device.email}</dd>
-                               <dt className="font-medium text-muted-foreground">SIM Operator</dt>
-                               <dd>{device.simOperator}</dd>
-                               <dt className="font-medium text-muted-foreground">IP Address</dt>
-                               <dd>{device.ip}</dd>
-                               <dt className="font-medium text-muted-foreground">Status</dt>
-                               <dd>{device.status}</dd>
-                               <dt className="font-medium text-muted-foreground">Last Sync</dt>
-                               <dd>{device.lastSync}</dd>
-                               <dt className="font-medium text-muted-foreground">Last Known Location</dt>
-                               <dd>{device.location}</dd>
-                           </dl>
-                        </CardContent>
-                    </Card>
-                    <LocationCard />
-                </div>
-
-                <div className="lg:col-span-2 space-y-6">
-                    <RemoteCameraControl />
-                    <LiveScreenView />
-                    <LiveAudio />
-                    <AppManagement />
-                    <CallHistory />
-                </div>
-            </div>
-
+        <div className="flex items-center justify-center h-full">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Device Not Found</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p>The requested device could not be found.</p>
+                </CardContent>
+            </Card>
         </div>
-    );
+    )
+  }
+
+  return (
+    <div className="grid gap-6">
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                         {device.type === 'mobile' ? <Smartphone className="w-10 h-10 text-primary" /> : <Monitor className="w-10 h-10 text-primary" />}
+                        <div>
+                            <CardTitle>{device.name}</CardTitle>
+                            <CardDescription>{device.os}</CardDescription>
+                        </div>
+                    </div>
+                     <Button onClick={handleToggleLock} variant={device.locked ? 'destructive' : 'default'}>
+                        {device.locked ? 'Unlock' : 'Lock'} Device
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                    <Wifi className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold">Status</p>
+                        <p className="text-muted-foreground flex items-center gap-2">
+                             <span className={`h-2 w-2 rounded-full ${device.status === 'Online' ? 'bg-green-500' : 'bg-gray-400'}`} />
+                            {device.status}
+                        </p>
+                    </div>
+                </div>
+                 <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                    <Signal className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold">SIM Operator</p>
+                        <p className="text-muted-foreground">{device.operator}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                    <Power className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold">IP Address</p>
+                        <p className="text-muted-foreground">{device.ip}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                    <Mail className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold">Registered Email</p>
+                        <p className="text-muted-foreground">{device.email}</p>
+                    </div>
+                </div>
+                 <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                    <Phone className="w-5 h-5 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold">Contact</p>
+                        <p className="text-muted-foreground">{device.contact}</p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+        
+        <LiveMonitoring />
+        <LocationCard />
+
+        <div className="grid gap-6 md:grid-cols-2">
+            <AppManagement />
+            <CallHistory />
+        </div>
+
+    </div>
+  );
 }
